@@ -11,35 +11,36 @@ import glob
 
 from argparse import ArgumentParser
 
+
 def main():
-    parser = ArgumentParser(description="""\
-Unpack a MIME message into a directory of files.
-""")
-    parser.add_argument('-d', '--directory', required=True,
-                        help="""Unpack the MIME message into the named
-                        directory, which will be created if it doesn't already
-                        exist.""")
-    #parser.add_argument('msgfile')
+    parser = ArgumentParser(
+        description="""\
+        Unpack a MIME message into a directory of files.
+        """)
+    parser.add_argument(
+        '-d', '--directory', required=True,
+        help="""Unpack the MIME message into the named
+        directory, which will be created if it doesn't already
+        exist.""")
     args = parser.parse_args()
     source = sys.stdin
     attachlist = "attachments.html"
 	
-    # Remove previous files
-    files = glob.glob(args.directory+'/*')
-    for f in files:
-        os.remove(f)
-
+    # store message
     with source as fp:
         msg = email.message_from_file(fp)
-    # Use arg instead of stdin
-    # with open(args.msgfile) as fp:
-    #     msg = email.message_from_file(fp)
-
+    
+    # create folder
     try:
         os.mkdir(args.directory)
+    # or remove previous files
     except FileExistsError:
+        files = glob.glob(args.directory+'/*')
+        for f in files:
+            os.remove(f)
         pass
-
+    
+    # Unpack message
     counter = 1
     for part in msg.walk():
         # multipart/* are just containers
@@ -65,6 +66,7 @@ Unpack a MIME message into a directory of files.
         # store attachments list into an html
         with open(os.path.join(args.directory, attachlist), 'a') as fd:
             fd.write("<a href='"+filename+"'>"+filename+"</a>\n")
+
     
 if __name__ == '__main__':
     main()
