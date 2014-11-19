@@ -1,11 +1,12 @@
 #!/usr/bin/env python3.4
 
-"""Unpack a MIME message into a directory of files."""
+"""
+Unpack a MIME message into a directory of files.
+"""
 
 import os
 import sys
 import email
-import errno
 import mimetypes
 import glob
 
@@ -25,11 +26,11 @@ def main():
     args = parser.parse_args()
     source = sys.stdin
     attachlist = "attachments.html"
-	
+
     # store message
     with source as fp:
         msg = email.message_from_file(fp)
-    
+
     # create folder
     try:
         os.mkdir(args.directory)
@@ -39,7 +40,7 @@ def main():
         for f in files:
             os.remove(f)
         pass
-    
+
     # Unpack message
     counter = 1
     for part in msg.walk():
@@ -52,7 +53,7 @@ def main():
             with open(os.path.join(args.directory, filename), 'wb') as fd:
                 fd.write(part.get_payload(decode=True))
             continue
-		# extract attachments
+        # extract attachments
         filename = part.get_filename()
         if not filename:
             ext = mimetypes.guess_extension(part.get_content_type())
@@ -67,6 +68,6 @@ def main():
         with open(os.path.join(args.directory, attachlist), 'a') as fd:
             fd.write("<a href='"+filename+"'>"+filename+"</a>\n")
 
-    
+
 if __name__ == '__main__':
     main()
