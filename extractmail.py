@@ -11,10 +11,6 @@ import glob
 
 from argparse import ArgumentParser
 
-files = glob.glob('/tmp/mailex/*')
-for f in files:
-	os.remove(f)
-
 def main():
     parser = ArgumentParser(description="""\
 Unpack a MIME message into a directory of files.
