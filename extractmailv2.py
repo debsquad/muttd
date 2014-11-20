@@ -5,7 +5,6 @@
 import sys
 import email
 import mimetypes
-from array import *
 
 def main():
     source = sys.stdin
