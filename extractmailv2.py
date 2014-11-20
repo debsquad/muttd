@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.4
 
-"""Unpack a MIME message into a directory of files."""
+"""Unpack and store a MIME message into memory."""
 
 import sys
 import email
