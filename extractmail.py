@@ -17,13 +17,36 @@ from argparse import ArgumentParser
 
 template = """
 <style>
-.menu {{
+.sidebar {{
     position: fixed;
-    top: 6px; right: 6px;
+    top: 0; right: 0;
+    transform: translate3d(238px,0,0);
+    transition: all .2s ease-out;
+    width: 240px;
+    height: 100%;
+    background: #000;
+    font-family: helvetica, sans;
+}}
+.sidebar.active {{
+    transform: translate3d(0,0,0);
+    transition: all .2s ease-in;
+}}
+.side-cont {{
+    color: white;
+}}
+.sidebar a, a:visited {{
+    color: white;
+    text-decoration: none;
+}}
+.sidebar a:hover {{
+    text-decoration: underline;
+}}
+#menu {{
+    position: absolute;
+    top: 0; left: -48px;
     width: 48px;
     height: 48px;
     background: #000;
-    border-radius: 24px;
     color: #FFF;
     text-align: center;
     display: flex;
@@ -32,7 +55,7 @@ template = """
     -moz-box-pack: center;
     justify-content: center;
 }}
-.border-menu {{
+.icon-menu {{
     position: absolute;
     display: inline-block;
     top: 22px;
@@ -41,8 +64,8 @@ template = """
     width: 24px;
     background: #FFF;
 }}
-.border-menu:after,
-.border-menu:before {{
+.icon-menu:after,
+.icon-menu:before {{
     content: '';
     position: absolute;
     width: 100%;
@@ -50,17 +73,39 @@ template = """
     left: 0;
     background: #fff;
 }}
-.border-menu:after {{ top: 6px }}
-.border-menu:before {{ top: -6px }}
+.icon-menu:after {{ top: 6px }}
+.icon-menu:before {{ top: -6px }}
+h2 {{
+    font-size: 18px;
+    line-height: 48px;
+    margin: 0;
+    padding: 0 24px;
+}}
 pre {{
     line-height: 0.4
 }}
+li {{
+    list-style-type: none;
+    padding: 0 24px;
+    font-size: 14px;
+    line-height: 24px;
+}}
 </style>
-<a href='#'  class=menu>
-	<div class='border-menu'>
-	</div>
-</a>
-{}
+<div class=sidebar id=sidebar>
+    <a href='#' id=menu>
+        <div class='icon-menu'></div>
+    </a>
+    <div class="side-cont">
+        <h2>Attachments:</h2>
+        {}
+    </div>
+</div>
+<script type="text/javascript">
+function a(){{
+    document.querySelector('#sidebar').classList.toggle('active');
+}}
+document.querySelector('#menu').addEventListener('click', a )
+</script>
 """
 
 def main():
@@ -103,7 +148,7 @@ def main():
                 filename = part.get_filename()
                 with open(os.path.join(args.directory, filename), 'wb') as fp:
                     fp.write(part.get_payload(decode=True))
-                htmlList = htmlList+"<a href='"+filename+"'>"+filename+"</a>\n"
+                htmlList = htmlList+"<li><a href='"+filename+"'>"+filename+"</a></li>\n"
             # save main message
             else:
                 filename = "index.html"
@@ -114,13 +159,15 @@ def main():
                     continue
                 charset = part.get_content_charset()
                 if part.get_content_type() == "text/plain":
-                    text = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
+                    text = str(part.get_payload(decode=True), str(charset),
+                        "ignore").encode('utf8', 'replace')
                     with open(os.path.join(args.directory, filename), 'wb') as fd:
                         fd.write(text)
                     msgType = 'txt'
                     continue
                 if part.get_content_type() == 'text/html':
-                    html = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
+                    html = str(part.get_payload(decode=True), str(charset),
+                        "ignore").encode('utf8', 'replace')
                     with open(os.path.join(args.directory, filename), 'wb') as fd:
                         fd.write(html)
                     msgType = 'html'
@@ -131,7 +178,8 @@ def main():
         if msg.get_content_charset() is None:
             text = msg.get_payload(decode=True)
         else:
-            text = str(msg.get_payload(decode=True), msg.get_content_charset(), 'ignore').encode('utf8', 'replace')
+            text = str(msg.get_payload(decode=True), msg.get_content_charset(),
+                'ignore').encode('utf8', 'replace')
         with open(os.path.join(args.directory, filename), 'wb') as fd:
             fd.write(text)
         if msg.get_content_type() == "text/html":
@@ -140,13 +188,13 @@ def main():
             msgType = 'txt'
 
     # check if our file has <html> tags (need to be improved)
-    for line in fileinput.input(
-        os.path.join(args.directory, "index.html"), inplace=1):
-        print(line)
-        if re.match("<html>", line):
-            htmlTags = 1
-        else:
-            htmlTags = 0
+    with open(os.path.join(args.directory, "index.html"), 'r') as f:
+        for line in f:
+            if re.match("<html>", line):
+                htmlTags = 1
+                break
+            else:
+                htmlTags = 0
 
     # Format index.html
     count = 0
