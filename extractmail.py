@@ -10,43 +10,42 @@ import email
 import glob
 import fileinput
 import re
+import tarfile
+import shutil
 
 from argparse import ArgumentParser
 
 template = """
 <style>
-.sidebar {{
+.muttd {{
     position: fixed;
     top: 0; right: 0;
-    transform: translate3d(238px,0,0);
+    transform: translate3d(240px,0,0);
     transition: all .2s ease-out;
     width: 240px;
     height: 100%;
-    background: #000;
+    background: #2E3243;
     font-family: helvetica, sans;
+    color: #FFF;
+    border-left: 1px solid #1E1F2B;
 }}
-.sidebar.active {{
+.muttd.active {{
     transform: translate3d(0,0,0);
     transition: all .2s ease-in;
 }}
-.side-cont {{
-    color: white;
+.muttd .side-cont {{
+    padding: 12px 0px;
 }}
-.sidebar a, a:visited {{
-    color: white;
-    text-decoration: none;
+.muttd a, a:visited {{
+    color: inherit;
     outline: 0;
 }}
-.sidebar a:hover {{
-    text-decoration: underline;
-}}
-#menu {{
+.muttd #menu {{
     position: absolute;
-    top: 0; left: -48px;
-    width: 48px;
-    height: 48px;
-    background: #000;
-    color: #FFF;
+    top: 0; left: -64px;
+    width: 64px;
+    height: 64px;
+    color: #222;
     text-align: center;
     display: flex;
     -moz-box-align: center;
@@ -54,56 +53,98 @@ template = """
     -moz-box-pack: center;
     justify-content: center;
 }}
-.icon-menu {{
+.muttd .icon-menu {{
     position: absolute;
     display: inline-block;
-    top: 22px;
-    left: 12px;
+    top: 28px;
+    left: 24px;
     height: 2px;
     width: 24px;
-    background: #FFF;
+    background: #2E3243;
 }}
-.icon-menu:after,
-.icon-menu:before {{
+.muttd .icon-menu:after,
+.muttd .icon-menu:before {{
     content: '';
     position: absolute;
     width: 100%;
     height: 2px;
     left: 0;
-    background: #fff;
+    background: #2E3243;
 }}
-.icon-menu:after {{ top: 6px }}
-.icon-menu:before {{ top: -6px }}
-h2 {{
-    font-size: 18px;
+.muttd .icon-menu:after {{ top: 6px }}
+.muttd .icon-menu:before {{ top: -6px }}
+.muttd h2 {{
+    font-size: 14px;
     line-height: 48px;
     margin: 0;
     padding: 0 24px;
 }}
-pre {{
-    line-height: 0.4
-}}
-li {{
-    list-style-type: none;
+.muttd .dl-cont {{
     padding: 0 24px;
+}}
+.muttd a.button {{
+    display: block;
+    background: #40B1D0;
+    border-radius: 2px;
+    text-align: center;
+    width: 100%;
+    line-height: 37px;
     font-size: 14px;
-    line-height: 24px;
+    box-shadow: 0px 2px 2px rgba(0,0,0,.2);
+    text-decoration: none;
+}}
+.muttd a.button:active {{
+    box-shadow: none;
+    transform: translate3d(0,1px,0);
+}}
+pre {{
+    line-height: 14px;
+}}
+.muttd .att-cont a,
+.muttd .att-cont a:visited {{
+    position: relative;
+    display: block;
+    list-style-type: none;
+    padding: 0 24px 0 48px;
+    font-size: 13px;
+    line-height: 36px;
+    color: #BCC1D8;
+    text-decoration: none;
+}}
+.muttd .att-cont a:after {{
+    content: "+";
+    position: absolute;
+    top: 0; left: 24px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #1E1F2B;
+}}
+.muttd .att-cont a:hover {{
+    background: #252736;
+    color: #FFF;
+}}
+.muttd .att-cont a:hover:after {{
+    color: #FFF;
 }}
 </style>
-<div class=sidebar id=sidebar>
-    <a href='#' id=menu>
+<div class=muttd id=muttd>
+    <a href='#' id=muttdmenu>
         <div class='icon-menu'></div>
     </a>
     <div class="side-cont">
-        <h2>Attachments:</h2>
-        {}
+        <div class='dl-cont'>
+        <a href='/attachments.tgz' class=button>Download <small>(.tgz)</small></a></br>
+        </div>
+        <div class='att-cont'>
+            {}
+        </div>
     </div>
 </div>
 <script type="text/javascript">
 function a(){{
-    document.querySelector('#sidebar').classList.toggle('active');
+    document.querySelector('#muttd').classList.toggle('active');
 }}
-document.querySelector('#menu').addEventListener('click', a )
+document.querySelector('#muttdmenu').addEventListener('click', a )
 </script>
 """
 
@@ -124,6 +165,7 @@ def main():
     # get email from stdin
     with source as fp:
         msg = email.message_from_file(fp)
+
     # create or clean up folder
     try:
         os.mkdir(args.directory)
@@ -131,10 +173,11 @@ def main():
         files = glob.glob(args.directory+'/*')
         for f in files:
             os.remove(f)
-        pass
+            pass
 
     htmlList = ""
     attachments = 0
+    msgType = 'txt'
     # unpack message: case multipart
     if msg.is_multipart():
         for part in msg.walk():
@@ -147,7 +190,7 @@ def main():
                 filename = part.get_filename()
                 with open(os.path.join(args.directory, filename), 'wb') as fp:
                     fp.write(part.get_payload(decode=True))
-                htmlList += "<li><a href='"+filename+"'>"+filename+"</a></li>\n"
+                htmlList += "<a href='"+filename+"'>"+filename+"</a>\n"
             # save main message
             else:
                 filename = "index.html"
@@ -156,35 +199,27 @@ def main():
                     with open(os.path.join(args.directory, filename), 'wb') as f:
                         f.write(part.get_payload(decode=True))
                     continue
-                charset = part.get_content_charset()
-                if part.get_content_type() == "text/plain":
+                else:
+                    charset = part.get_content_charset()
                     text = str(part.get_payload(decode=True), str(charset),
                         "ignore").encode('utf8', 'replace')
                     with open(os.path.join(args.directory, filename), 'wb') as f:
                         f.write(text)
-                    msgType = 'txt'
+                    if part.get_content_type() == 'text/html':
+                        msgType = 'html'
                     continue
-                if part.get_content_type() == 'text/html':
-                    html = str(part.get_payload(decode=True), str(charset),
-                        "ignore").encode('utf8', 'replace')
-                    with open(os.path.join(args.directory, filename), 'wb') as f:
-                        f.write(html)
-                    msgType = 'html'
-                    continue
-    # other case: single message
     else:
         filename = "index.html"
         if msg.get_content_charset() is None:
-            text = msg.get_payload(decode=True)
+             with open(os.path.join(args.directory, filename), 'wb') as f:
+                f.write(msg.get_payload(decode=True))
         else:
             text = str(msg.get_payload(decode=True), msg.get_content_charset(),
                 'ignore').encode('utf8', 'replace')
-        with open(os.path.join(args.directory, filename), 'wb') as fd:
-            fd.write(text)
+            with open(os.path.join(args.directory, filename), 'wb') as f:
+                f.write(text)
         if msg.get_content_type() == "text/html":
             msgType = 'html'
-        else:
-            msgType = 'txt'
 
     # check if our file has <html> tags (need to be improved)
     with open(os.path.join(args.directory, "index.html"), 'r') as f:
@@ -194,6 +229,12 @@ def main():
                 break
             else:
                 htmlTags = 0
+
+    # Archive attachments
+    if attachments:
+        tar = tarfile.open(os.path.join(args.directory, 'attachments.tgz'), "w:gz")
+        tar.add(os.path.join(args.directory))
+        tar.close
 
     # Format index.html
     count = 0
