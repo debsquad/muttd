@@ -4,6 +4,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from os import curdir, sep
 
 
+HOST = "127.0.0.1"
 PORT_NUMBER = 8080
 
 
@@ -64,7 +65,7 @@ class MuttdHandler(BaseHTTPRequestHandler):
 
 try:
     # Create a web server and define the handler to manage the incoming request
-    server = HTTPServer(("", PORT_NUMBER), MuttdHandler)
+    server = HTTPServer((HOST, PORT_NUMBER), MuttdHandler)
     print("Started httpserver on port {}".format(PORT_NUMBER))
 
     # Wait forever for incoming http requests
