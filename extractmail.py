@@ -159,7 +159,7 @@ def main():
             print("<html>")
         # add attachment list
         if msgType == "html" and re.match("</body>", line):
-            pattern = re.compile("</body>", re.IGNORECASE)
+            pattern = re.compile(r'</body>.*$', re.IGNORECASE)
             line = re.sub(pattern, '', line)
             if attachments == 1:
                 print(line+template.format(htmlList))
