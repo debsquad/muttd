@@ -7,8 +7,6 @@ Unpack a MIME message into a directory of files.
 import os
 import sys
 import email
-import errno
-import mimetypes
 import glob
 import fileinput
 import re
@@ -37,6 +35,7 @@ template = """
 .sidebar a, a:visited {{
     color: white;
     text-decoration: none;
+    outline: 0;
 }}
 .sidebar a:hover {{
     text-decoration: underline;
@@ -148,28 +147,28 @@ def main():
                 filename = part.get_filename()
                 with open(os.path.join(args.directory, filename), 'wb') as fp:
                     fp.write(part.get_payload(decode=True))
-                htmlList = htmlList+"<li><a href='"+filename+"'>"+filename+"</a></li>\n"
+                htmlList += "<li><a href='"+filename+"'>"+filename+"</a></li>\n"
             # save main message
             else:
                 filename = "index.html"
                 if part.get_content_charset() is None:
                     text = part.get_payload(decode=True)
-                    with open(os.path.join(args.directory, filename), 'wb') as fd:
-                        fd.write(part.get_payload(decode=True))
+                    with open(os.path.join(args.directory, filename), 'wb') as f:
+                        f.write(part.get_payload(decode=True))
                     continue
                 charset = part.get_content_charset()
                 if part.get_content_type() == "text/plain":
                     text = str(part.get_payload(decode=True), str(charset),
                         "ignore").encode('utf8', 'replace')
-                    with open(os.path.join(args.directory, filename), 'wb') as fd:
-                        fd.write(text)
+                    with open(os.path.join(args.directory, filename), 'wb') as f:
+                        f.write(text)
                     msgType = 'txt'
                     continue
                 if part.get_content_type() == 'text/html':
                     html = str(part.get_payload(decode=True), str(charset),
                         "ignore").encode('utf8', 'replace')
-                    with open(os.path.join(args.directory, filename), 'wb') as fd:
-                        fd.write(html)
+                    with open(os.path.join(args.directory, filename), 'wb') as f:
+                        f.write(html)
                     msgType = 'html'
                     continue
     # other case: single message
