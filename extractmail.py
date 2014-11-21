@@ -221,7 +221,7 @@ def main():
         if msg.get_content_type() == "text/html":
             msgType = 'html'
 
-    # check if our file has <html> tags (need to be improved)
+    # check if our file has <html>
     with open(os.path.join(args.directory, "index.html"), 'r') as f:
         for line in f:
             if re.match("<html>", line):
@@ -245,25 +245,30 @@ def main():
             print("<html><pre>")
         elif count == 0 and htmlTags is not 1 and msgType == "html":
             print("<html>")
-        # add attachment list
-        if msgType == "html" and re.match("</body>", line):
-            pattern = re.compile(r'</body>.*$', re.IGNORECASE)
-            line = re.sub(pattern, '', line)
-            if attachments == 1:
-                print(line+template.format(htmlList))
-            else:
-                print(line)
-            print("</body></html>")
-            break
-        elif msgType == "html" and re.search("</html>", line):
-            pattern = re.compile("</html>", re.IGNORECASE)
-            line = re.sub(pattern, '', line)
-            if attachments == 1:
-                print(line+template.format(htmlList))
-            else:
-                print(line)
-            print("</html>")
-            break
+        if msgType == "html":
+            # correct html encoding
+            if re.search("charset", line):
+                pattern = re.compile('charset=[\sa-z0-9A-Z-]+', re.IGNORECASE)
+                line = re.sub(pattern, 'charset=UTF-8', line)
+            # add attachment list
+            if re.match("</body>", line):
+                pattern = re.compile(r'</body>.*$', re.IGNORECASE)
+                line = re.sub(pattern, '', line)
+                if attachments == 1:
+                    print(line+template.format(htmlList))
+                else:
+                    print(line)
+                print("</body></html>")
+                break
+            elif re.search("</html>", line):
+                pattern = re.compile("</html>", re.IGNORECASE)
+                line = re.sub(pattern, '', line)
+                if attachments == 1:
+                    print(line+template.format(htmlList))
+                else:
+                    print(line)
+                print("</html>")
+                break
         print(line),
         count += 1
     if attachments == 1:
