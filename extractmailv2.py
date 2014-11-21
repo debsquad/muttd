@@ -19,10 +19,11 @@ template = """
 <style>
 .menu {{
     position: fixed;
-    top: 0; right: 0;
+    top: 6px; right: 6px;
     width: 48px;
     height: 48px;
     background: #000;
+    border-radius: 24px;
     color: #FFF;
     text-align: center;
     display: flex;
@@ -32,21 +33,28 @@ template = """
     justify-content: center;
 }}
 .border-menu {{
-    position: relative;
+    position: absolute;
     display: inline-block;
-    width: 1em;
-    height: 1em;
+    top: 22px;
+    left: 12px;
+    height: 2px;
+    width: 24px;
+    background: #FFF;
 }}
+.border-menu:after,
 .border-menu:before {{
     content: '';
     position: absolute;
-    top: 0.25em;
+    width: 100%;
+    height: 2px;
     left: 0;
-    width: 1em;
-    height: 0.125em;
-    border-top: 0.375em double #fff;
-    border-bottom: 0.125em solid #fff;
+    background: #fff;
 }}
+.border-menu:after {{ top: 6px }}
+.border-menu:before {{ top: -6px }}
+pre {{
+    line-height: 0.4
+}}    
 </style>
 <a href='#'  class=menu>
 	<div class='border-menu'>
@@ -72,7 +80,6 @@ def main():
     # get email from stdin
     with source as fp:
         msg = email.message_from_file(fp)
-
     # create or clean up folder
     try:
         os.mkdir(args.directory)
@@ -83,20 +90,20 @@ def main():
         pass
     
     htmlList = ""
+    attachments = 0
     # unpack message: case multipart
     if msg.is_multipart():
         for part in msg.walk():
             # skip multipart/*
             if part.get_content_maintype() == 'multipart':
                 continue
-
             # save attachments
             if part.get_filename():
+                attachments = 1
                 filename = part.get_filename()
                 with open(os.path.join(args.directory, filename), 'wb') as fp:
                     fp.write(part.get_payload(decode=True))
                 htmlList = htmlList+"<a href='"+filename+"'>"+filename+"</a>\n"
-
             # save main message
             else:
                 filename = "index.html"
@@ -118,7 +125,6 @@ def main():
                         fd.write(html)
                     msgType = 'html'
                     continue
-
     # other case: single message                
     else:
         filename = "index.html"
@@ -155,23 +161,33 @@ def main():
         if msgType == "html" and re.match("</body>", line):
             pattern = re.compile("</body>", re.IGNORECASE)
             line = re.sub(pattern, '', line)
-            print(line+template.format(htmlList))
+            if attachments == 1:
+                print(line+template.format(htmlList))
+            else:
+                print(line)
             print("</body></html>")				
             break
         elif msgType == "html" and re.search("</html>", line):
             pattern = re.compile("</html>", re.IGNORECASE)
             line = re.sub(pattern, '', line)
-            print(line+template.format(htmlList))
+            if attachments == 1:
+                print(line+template.format(htmlList))
+            else:
+                print(line)
             print("</html>")
             break
         print(line),
         count += 1
-    if (msgType == "txt"):
+    if attachments == 1:    
+        if (msgType == "txt"):
+            with open(os.path.join(args.directory, "index.html"), 'a') as fp:
+                fp.write("</pre>"+template.format(htmlList)+"</html>")
+        if (msgType == "html" and htmlTags is not 1):
+            with open(os.path.join(args.directory, "index.html"), 'a') as fp:
+                fp.write(template.format(htmlList)+"</html>")
+    else:
         with open(os.path.join(args.directory, "index.html"), 'a') as fp:
-            fp.write("</pre>"+template.format(htmlList)+"</html>")
-    if (msgType == "html" and htmlTags is not 1):
-        with open(os.path.join(args.directory, "index.html"), 'a') as fp:
-            fp.write(template.format(htmlList)+"</html>")
+            fp.write("</html>")
 
 
 if __name__ == '__main__':
