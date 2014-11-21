@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import urllib
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from os import curdir, sep
+from os.path import basename
 
 
 HOST = "127.0.0.1"
@@ -50,9 +52,13 @@ class MuttdHandler(BaseHTTPRequestHandler):
                 mimetype = "application/octet-stream"
                 sendReply = True
 
+            # Open the static file requested and send it
             if sendReply:
-                # Open the static file requested and send it
-                f = open(curdir + sep + self.path)
+                # unquote() handles URL encoding and basename is a quick way to
+                # avoid users from requesting files outside of the path (for
+                # example ../../../../etc/passwd)
+                path = basename(urllib.unquote(self.path))
+                f = open(curdir + sep + path)
                 self.send_response(200)
                 self.send_header("Content-type", mimetype)
                 self.end_headers()
