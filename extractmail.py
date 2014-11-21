@@ -40,7 +40,7 @@ template = """
     color: inherit;
     outline: 0;
 }}
-.muttd #menu {{
+.muttd #muttdmenu {{
     position: absolute;
     top: 0; left: -64px;
     width: 64px;
