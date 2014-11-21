@@ -11,7 +11,6 @@ import glob
 import fileinput
 import re
 import tarfile
-import shutil
 
 from argparse import ArgumentParser
 
@@ -162,11 +161,11 @@ def main():
     args = parser.parse_args()
     source = sys.stdin
 
-    # get email from stdin
-    with source as fp:
-        msg = email.message_from_file(fp)
+    # Get email from stdin
+    with source as f:
+        msg = email.message_from_file(f)
 
-    # create or clean up folder
+    # Create or clean up folder
     try:
         os.mkdir(args.directory)
     except FileExistsError:
@@ -175,10 +174,13 @@ def main():
             os.remove(f)
             pass
 
+    # Init some variables
     htmlList = ""
     attachments = 0
     msgType = 'txt'
-    # unpack message: case multipart
+
+    # Unpack our message
+    # if our message is multipart, let's unpack it
     if msg.is_multipart():
         for part in msg.walk():
             # skip multipart/*
@@ -188,8 +190,8 @@ def main():
             if part.get_filename():
                 attachments = 1
                 filename = part.get_filename()
-                with open(os.path.join(args.directory, filename), 'wb') as fp:
-                    fp.write(part.get_payload(decode=True))
+                with open(os.path.join(args.directory, filename), 'wb') as f:
+                    f.write(part.get_payload(decode=True))
                 htmlList += "<a href='"+filename+"'>"+filename+"</a>\n"
             # save main message
             else:
@@ -208,6 +210,8 @@ def main():
                     if part.get_content_type() == 'text/html':
                         msgType = 'html'
                     continue
+    # if it's a single part message, let's export it into
+    # a single file we will customize later
     else:
         filename = "index.html"
         if msg.get_content_charset() is None:
@@ -221,7 +225,14 @@ def main():
         if msg.get_content_type() == "text/html":
             msgType = 'html'
 
-    # check if our file has <html>
+    # Compress attachments
+    if attachments:
+        tar = tarfile.open(os.path.join(args.directory, 'attachments.tgz'), "w:gz")
+        tar.add(os.path.join(args.directory))
+        tar.close
+
+    # Format index.html
+    # any <html> tag already there?
     with open(os.path.join(args.directory, "index.html"), 'r') as f:
         for line in f:
             if re.match("<html>", line):
@@ -230,13 +241,6 @@ def main():
             else:
                 htmlTags = 0
 
-    # Archive attachments
-    if attachments:
-        tar = tarfile.open(os.path.join(args.directory, 'attachments.tgz'), "w:gz")
-        tar.add(os.path.join(args.directory))
-        tar.close
-
-    # Format index.html
     count = 0
     for line in fileinput.input(
         os.path.join(args.directory, "index.html"), inplace=1):
@@ -271,16 +275,17 @@ def main():
                 break
         print(line),
         count += 1
+
     if attachments == 1:
         if (msgType == "txt"):
-            with open(os.path.join(args.directory, "index.html"), 'a') as fp:
-                fp.write("</pre>"+template.format(htmlList)+"</html>")
+            with open(os.path.join(args.directory, "index.html"), 'a') as f:
+                f.write("</pre>"+template.format(htmlList)+"</html>")
         if (msgType == "html" and htmlTags is not 1):
-            with open(os.path.join(args.directory, "index.html"), 'a') as fp:
-                fp.write(template.format(htmlList)+"</html>")
+            with open(os.path.join(args.directory, "index.html"), 'a') as f:
+                f.write(template.format(htmlList)+"</html>")
     else:
-        with open(os.path.join(args.directory, "index.html"), 'a') as fp:
-            fp.write("</html>")
+        with open(os.path.join(args.directory, "index.html"), 'a') as f:
+            f.write("</html>")
 
 
 if __name__ == '__main__':
