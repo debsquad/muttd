@@ -81,80 +81,84 @@ def main():
         for f in files:
             os.remove(f)
         pass
-
-    count = 0
+    
     htmlList = ""
-    msgType = ""
+    # unpack message: case multipart
+    if msg.is_multipart():
+        for part in msg.walk():
+            # skip multipart/*
+            if part.get_content_maintype() == 'multipart':
+                continue
 
-    for part in msg.walk():
-        # skip multipart/*
-        if part.get_content_maintype() == 'multipart':
-            continue
+            # save attachments
+            if part.get_filename():
+                filename = part.get_filename()
+                with open(os.path.join(args.directory, filename), 'wb') as fp:
+                    fp.write(part.get_payload(decode=True))
+                htmlList = htmlList+"<a href='"+filename+"'>"+filename+"</a>\n"
 
-        # Store main message into index.html
-        # if the message is text/plain we add some html tags
-        if ( part.get_content_type() == "text/plain" and
-            part.get("Content-Disposition", None) != "attachment"):
-            filename = 'index.html'
-            with open(os.path.join(args.directory, filename), 'wb') as fd:
+            # save main message
+            else:
+                filename = "index.html"
+                if part.get_content_charset() is None:
+                    text = part.get_payload(decode=True)
+                    with open(os.path.join(args.directory, filename), 'wb') as fd:
+                        fd.write(part.get_payload(decode=True))
+                    continue
                 charset = part.get_content_charset()
-                if part.get_content_charset() == None:
-                    charset = 'utf-8'
-                text = str(part.get_payload(decode=True), charset)
-                text = "<pre>"+text+"</pre>"
-                fd.write(bytes(text, "utf-8"))
-            msgType='txt'
-            continue
-        elif (
-            part.get_content_type() == "text/html" and
-            part.get("Content-Disposition", None) != "attachment"):
-            filename = 'index.html'
-            with open(os.path.join(args.directory, filename), 'wb') as fd:
-                fd.write(part.get_payload(decode=True))
-            msgType = "html"
-            continue
+                if part.get_content_type() == "text/plain":
+                    text = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
+                    with open(os.path.join(args.directory, filename), 'wb') as fd:
+                        fd.write(text)
+                    msgType = 'txt'    
+                    continue
+                if part.get_content_type() == 'text/html':
+                    html = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
+                    with open(os.path.join(args.directory, filename), 'wb') as fd:
+                        fd.write(html)
+                    msgType = 'html'
+                    continue
 
-        # Store attachments into files
-        filename = part.get_filename()
-        if not filename:
-            ext = mimetypes.guess_extension(part.get_content_type())
-            if not ext:
-                # Use a generic bag-of-bits extension
-                ext = '.bin'
-            filename = 'part-%03d%s' % (count, ext)
-        with open(os.path.join(args.directory, filename), 'wb') as fp:
-            fp.write(part.get_payload(decode=True))
-        htmlList = htmlList+"<a href='"+filename+"'>"+filename+"</a>\n"
-        count += 1
-        
+    # other case: single message                
+    else:
+        filename = "index.html"
+        if msg.get_content_charset() is None:
+            text = msg.get_payload(decode=True)
+        else:    
+            text = str(msg.get_payload(decode=True), msg.get_content_charset(), 'ignore').encode('utf8', 'replace')
+        with open(os.path.join(args.directory, filename), 'wb') as fd:
+            fd.write(text)
+        if msg.get_content_type() == "text/html":
+            msgType = 'html'
+        else:
+            msgType = 'txt'
 
-    # check if our file has <html> tags
-    count = 0
+    # check if our file has <html> tags (need to be improved)
     for line in fileinput.input(
         os.path.join(args.directory, "index.html"), inplace=1):
         print(line)
         if re.match("<html>", line):
             htmlTags = 1
-            break
         else:
             htmlTags = 0
     
-    # add <html> tags when missing
-    # add our template + list of attachments at the end of the file
+    # Format index.html
+    count = 0
     for line in fileinput.input(
         os.path.join(args.directory, "index.html"), inplace=1):
-        # <html> tag when missing
-        if (
-            (count == 0 and msgType == "txt") or
-            (count == 0 and htmlTags is not 1 and msgType == "html")):
+        # add <html> tag when missing
+        if count == 0 and msgType == "txt":
+            print("<html><pre>")
+        elif count == 0 and htmlTags is not 1 and msgType == "html":
             print("<html>")
-        if (msgType == "html" and re.match("</body>", line)):
+        # add attachment list
+        if msgType == "html" and re.match("</body>", line):
             pattern = re.compile("</body>", re.IGNORECASE)
             line = re.sub(pattern, '', line)
             print(line+template.format(htmlList))
             print("</body></html>")				
             break
-        if (msgType == "html" and re.match("</html>", line)):
+        elif msgType == "html" and re.search("</html>", line):
             pattern = re.compile("</html>", re.IGNORECASE)
             line = re.sub(pattern, '', line)
             print(line+template.format(htmlList))
@@ -162,8 +166,10 @@ def main():
             break
         print(line),
         count += 1
-    if ((msgType == "txt") or
-        (msgType == "html" and htmlTags is not 1)):
+    if (msgType == "txt"):
+        with open(os.path.join(args.directory, "index.html"), 'a') as fp:
+            fp.write("</pre>"+template.format(htmlList)+"</html>")
+    if (msgType == "html" and htmlTags is not 1):
         with open(os.path.join(args.directory, "index.html"), 'a') as fp:
             fp.write(template.format(htmlList)+"</html>")
 
