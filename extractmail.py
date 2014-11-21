@@ -15,7 +15,7 @@ import re
 
 from argparse import ArgumentParser
 
-template = """                                                                      
+template = """
 <style>
 .menu {{
     position: fixed;
@@ -54,7 +54,7 @@ template = """
 .border-menu:before {{ top: -6px }}
 pre {{
     line-height: 0.4
-}}    
+}}
 </style>
 <a href='#'  class=menu>
 	<div class='border-menu'>
@@ -88,7 +88,7 @@ def main():
         for f in files:
             os.remove(f)
         pass
-    
+
     htmlList = ""
     attachments = 0
     # unpack message: case multipart
@@ -117,7 +117,7 @@ def main():
                     text = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
                     with open(os.path.join(args.directory, filename), 'wb') as fd:
                         fd.write(text)
-                    msgType = 'txt'    
+                    msgType = 'txt'
                     continue
                 if part.get_content_type() == 'text/html':
                     html = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
@@ -125,12 +125,12 @@ def main():
                         fd.write(html)
                     msgType = 'html'
                     continue
-    # other case: single message                
+    # other case: single message
     else:
         filename = "index.html"
         if msg.get_content_charset() is None:
             text = msg.get_payload(decode=True)
-        else:    
+        else:
             text = str(msg.get_payload(decode=True), msg.get_content_charset(), 'ignore').encode('utf8', 'replace')
         with open(os.path.join(args.directory, filename), 'wb') as fd:
             fd.write(text)
@@ -147,7 +147,7 @@ def main():
             htmlTags = 1
         else:
             htmlTags = 0
-    
+
     # Format index.html
     count = 0
     for line in fileinput.input(
@@ -165,7 +165,7 @@ def main():
                 print(line+template.format(htmlList))
             else:
                 print(line)
-            print("</body></html>")				
+            print("</body></html>")
             break
         elif msgType == "html" and re.search("</html>", line):
             pattern = re.compile("</html>", re.IGNORECASE)
@@ -178,7 +178,7 @@ def main():
             break
         print(line),
         count += 1
-    if attachments == 1:    
+    if attachments == 1:
         if (msgType == "txt"):
             with open(os.path.join(args.directory, "index.html"), 'a') as fp:
                 fp.write("</pre>"+template.format(htmlList)+"</html>")
