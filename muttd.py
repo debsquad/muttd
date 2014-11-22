@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
 import urllib
+import os
+
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from os import curdir, sep
 from os.path import basename
 
-
 HOST = "127.0.0.1"
 PORT_NUMBER = 8080
-
+DIR = "/tmp/muttd"
 
 class MuttdHandler(BaseHTTPRequestHandler):
 
@@ -70,6 +71,7 @@ class MuttdHandler(BaseHTTPRequestHandler):
             self.send_error(404, "File Not Found: {}".format(self.path))
 
 try:
+    os.chdir(DIR)
     # Create a web server and define the handler to manage the incoming request
     server = HTTPServer((HOST, PORT_NUMBER), MuttdHandler)
     print("Started httpserver on port {}".format(PORT_NUMBER))
