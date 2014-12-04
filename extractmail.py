@@ -14,6 +14,7 @@ import tarfile
 
 from argparse import ArgumentParser
 
+
 template = """
 <style>
 .muttd {{
@@ -147,6 +148,7 @@ document.querySelector('#muttdmenu').addEventListener('click', a )
 </script>
 """
 
+
 def main():
     parser = ArgumentParser(
         description="""\
@@ -202,7 +204,7 @@ def main():
                 else:
                     charset = part.get_content_charset()
                     text = str(part.get_payload(decode=True), str(charset),
-                        "ignore").encode('utf8', 'replace')
+                               "ignore").encode('utf8', 'replace')
                     with open(os.path.join(args.directory, filename), 'wb') as f:
                         f.write(text)
                     if part.get_content_type() == 'text/html':
@@ -212,11 +214,11 @@ def main():
     else:
         filename = "index.html"
         if msg.get_content_charset() is None:
-             with open(os.path.join(args.directory, filename), 'wb') as f:
+            with open(os.path.join(args.directory, filename), 'wb') as f:
                 f.write(msg.get_payload(decode=True))
         else:
             text = str(msg.get_payload(decode=True), msg.get_content_charset(),
-                'ignore').encode('utf8', 'replace')
+                       'ignore').encode('utf8', 'replace')
             with open(os.path.join(args.directory, filename), 'wb') as f:
                 f.write(text)
         if msg.get_content_type() == "text/html":
@@ -239,8 +241,8 @@ def main():
                 htmlTags = 0
 
     count = 0
-    for line in fileinput.input(
-        os.path.join(args.directory, "index.html"), inplace=1):
+    for line in fileinput.input(os.path.join(args.directory, "index.html"),
+                                inplace=1):
         # add <html> tag when missing
         if count == 0 and msgType == "txt":
             print("<html><pre>")

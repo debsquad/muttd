@@ -7,9 +7,11 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from os import curdir, sep
 from os.path import basename
 
+
 HOST = "127.0.0.1"
 PORT_NUMBER = 8080
 DIR = "/tmp/muttd"
+
 
 class MuttdHandler(BaseHTTPRequestHandler):
 
