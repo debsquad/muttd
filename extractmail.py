@@ -199,7 +199,7 @@ def main():
                 if part.get_content_charset() is None:
                     text = part.get_payload(decode=True)
                     with open(os.path.join(args.directory, filename), 'wb') as f:
-                        f.write(part.get_payload(decode=True))
+                        f.write(text)
                     continue
                 else:
                     charset = part.get_content_charset()
