@@ -11,8 +11,7 @@ import glob
 import fileinput
 import re
 import tarfile
-
-from argparse import ArgumentParser
+import argparse
 
 
 template = """
@@ -150,7 +149,7 @@ document.querySelector('#muttdmenu').addEventListener('click', a )
 
 
 def main():
-    parser = ArgumentParser(
+    parser = argparse.ArgumentParser(
         description="""\
         Unpack a MIME message into a directory of files inject a list
         of attachments inside .
@@ -160,12 +159,11 @@ def main():
         help="""Unpack the MIME message into the named
         directory, which will be created if it doesn't already
         exist.""")
+    parser.add_argument("mailfile", nargs="?", type=argparse.FileType('r'),
+                        default=sys.stdin)
     args = parser.parse_args()
-    source = sys.stdin
 
-    # Get email from stdin
-    with source as f:
-        msg = email.message_from_file(f)
+    msg = email.message_from_file(args.mailfile)
 
     # Create or clean up folder
     try:
