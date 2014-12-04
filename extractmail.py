@@ -172,7 +172,6 @@ def main():
         files = glob.glob(args.directory+'/*')
         for f in files:
             os.remove(f)
-            pass
 
     # Init some variables
     htmlList = ""
@@ -200,7 +199,6 @@ def main():
                     text = part.get_payload(decode=True)
                     with open(os.path.join(args.directory, filename), 'wb') as f:
                         f.write(text)
-                    continue
                 else:
                     charset = part.get_content_charset()
                     text = str(part.get_payload(decode=True), str(charset),
@@ -209,7 +207,6 @@ def main():
                         f.write(text)
                     if part.get_content_type() == 'text/html':
                         msgType = 'html'
-                    continue
     # if it's a single part message, let's export it into
     # a single file we will customize later
     else:
