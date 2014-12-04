@@ -182,8 +182,8 @@ def main():
     # if our message is multipart, let's unpack it
     if msg.is_multipart():
         for part in msg.walk():
-            # skip multipart/*
-            if part.get_content_maintype() == 'multipart':
+            # skip multipart sub-parts. TODO: parse these as well.
+            if part.is_multipart():
                 continue
             # save attachments
             if part.get_filename():
