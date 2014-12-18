@@ -155,7 +155,7 @@ def main():
         of attachments inside .
         """)
     parser.add_argument(
-        '-d', '--directory', required=True,
+        '-d', '--directory', default=os.path.expanduser("~/.muttd/message"),
         help="""Unpack the MIME message into the named
         directory, which will be created if it doesn't already
         exist.""")
@@ -167,7 +167,7 @@ def main():
 
     # Create or clean up folder
     try:
-        os.mkdir(args.directory)
+        os.makedirs(args.directory)
     except FileExistsError:
         files = glob.glob(args.directory+'/*')
         for f in files:
