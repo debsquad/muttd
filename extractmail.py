@@ -12,6 +12,7 @@ import fileinput
 import re
 import tarfile
 import argparse
+import shutil
 
 
 template = """
@@ -132,7 +133,8 @@ pre {{
     </a>
     <div class="side-cont">
         <div class='dl-cont'>
-        <a href='/attachments.tgz' class=button>Download <small>(.tgz)</small></a></br>
+            <a href='/attachments.tgz' class=button>All attachment <small>(.tgz)</small></a></br>
+            <a href='/email.eml' class=button>Download email <small>(.eml)</small></a></br>
         </div>
         <div class='att-cont'>
             {}
@@ -163,7 +165,8 @@ def main():
                         default=sys.stdin)
     args = parser.parse_args()
 
-    msg = email.message_from_file(args.mailfile)
+    msgdata = args.mailfile.read()
+    msg = email.message_from_string(msgdata)
 
     # Create or clean up folder
     try:
@@ -225,8 +228,12 @@ def main():
     # Compress attachments
     if attachments:
         tar = tarfile.open(os.path.join(args.directory, 'attachments.tgz'), "w:gz")
-        tar.add(os.path.join(args.directory))
-        tar.close
+        tar.add(args.directory)
+        tar.close()
+
+    # Keep a copy of the file for download
+    with open(os.path.join(args.directory, "email.eml"), "w") as fp:
+        fp.write(msgdata)
 
     # Format index.html
     # any <html> tag already there?

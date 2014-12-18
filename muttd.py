@@ -48,7 +48,7 @@ class MuttdHandler(BaseHTTPRequestHandler):
 
 if not os.path.exists(DIR):
     os.makedirs(DIR)
-    os.chdir(DIR)
+os.chdir(DIR)
 
 # Create a web server and define the handler to manage the incoming request
 server = HTTPServer((HOST, PORT_NUMBER), MuttdHandler)
