@@ -178,7 +178,7 @@ def main():
 
     # Init some variables
     htmlList = ""
-    attachments = 0
+    has_attachments = False
     msgType = 'txt'
 
     # Unpack our message
@@ -190,7 +190,7 @@ def main():
                 continue
             # save attachments
             if part.get_filename():
-                attachments = 1
+                has_attachments = True
                 filename = part.get_filename()
                 with open(os.path.join(args.directory, filename), 'wb') as f:
                     f.write(part.get_payload(decode=True))
@@ -226,7 +226,7 @@ def main():
             msgType = 'html'
 
     # Compress attachments
-    if attachments:
+    if has_attachments:
         tar = tarfile.open(os.path.join(args.directory, 'attachments.tgz'), "w:gz")
         tar.add(args.directory)
         tar.close()
@@ -262,7 +262,7 @@ def main():
             if re.match("</body>", line):
                 pattern = re.compile(r'</body>.*$', re.IGNORECASE)
                 line = re.sub(pattern, '', line)
-                if attachments == 1:
+                if has_attachments:
                     print(line+template.format(htmlList))
                 else:
                     print(line)
@@ -271,7 +271,7 @@ def main():
             elif re.search("</html>", line):
                 pattern = re.compile("</html>", re.IGNORECASE)
                 line = re.sub(pattern, '', line)
-                if attachments == 1:
+                if has_attachments:
                     print(line+template.format(htmlList))
                 else:
                     print(line)
@@ -280,7 +280,7 @@ def main():
         print(line),
         count += 1
 
-    if attachments == 1:
+    if has_attachments:
         if (msgType == "txt"):
             with open(os.path.join(args.directory, "index.html"), 'a') as f:
                 f.write("</pre>"+template.format(htmlList)+"</html>")
