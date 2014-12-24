@@ -179,6 +179,7 @@ def main():
     # Init some variables
     htmlList = ""
     has_attachments = False
+    has_html_header_tag = False
     msgType = 'txt'
 
     # Unpack our message
@@ -240,10 +241,8 @@ def main():
     with open(os.path.join(args.directory, "index.html"), 'r') as f:
         for line in f:
             if re.match("<html>", line):
-                htmlTags = 1
+                has_html_header_tag = True
                 break
-            else:
-                htmlTags = 0
 
     count = 0
     for line in fileinput.input(os.path.join(args.directory, "index.html"),
@@ -251,7 +250,7 @@ def main():
         # add <html> tag when missing
         if count == 0 and msgType == "txt":
             print("<html><pre>")
-        elif count == 0 and htmlTags is not 1 and msgType == "html":
+        elif count == 0 and not has_html_header_tag and msgType == "html":
             print("<html>")
         if msgType == "html":
             # correct html encoding
@@ -284,7 +283,7 @@ def main():
         if (msgType == "txt"):
             with open(os.path.join(args.directory, "index.html"), 'a') as f:
                 f.write("</pre>"+template.format(htmlList)+"</html>")
-        if (msgType == "html" and htmlTags is not 1):
+        if (msgType == "html" and not has_html_header_tag):
             with open(os.path.join(args.directory, "index.html"), 'a') as f:
                 f.write(template.format(htmlList)+"</html>")
     else:
