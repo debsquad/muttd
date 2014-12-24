@@ -157,11 +157,11 @@ def main():
         of attachments inside .
         """)
     parser.add_argument(
-        '-d', '--directory', default=os.path.expanduser("~/.muttd/message"),
+        "-d", "--directory", default=os.path.expanduser("~/.muttd/message"),
         help="""Unpack the MIME message into the named
         directory, which will be created if it doesn't already
         exist.""")
-    parser.add_argument("mailfile", nargs="?", type=argparse.FileType('r'),
+    parser.add_argument("mailfile", nargs="?", type=argparse.FileType("r"),
                         default=sys.stdin)
     args = parser.parse_args()
 
@@ -172,7 +172,7 @@ def main():
     try:
         os.makedirs(args.directory)
     except FileExistsError:
-        files = glob.glob(args.directory+'/*')
+        files = glob.glob(args.directory+"/*")
         for f in files:
             os.remove(f)
 
@@ -180,7 +180,7 @@ def main():
     htmlList = ""
     has_attachments = False
     has_html_header_tag = False
-    msgType = 'txt'
+    msgType = "txt"
 
     # Unpack our message
     # if our message is multipart, let's unpack it
@@ -193,42 +193,42 @@ def main():
             if part.get_filename():
                 has_attachments = True
                 filename = part.get_filename()
-                with open(os.path.join(args.directory, filename), 'wb') as f:
+                with open(os.path.join(args.directory, filename), "wb") as f:
                     f.write(part.get_payload(decode=True))
-                htmlList += "<a href='"+filename+"'>"+filename+"</a>\n"
+                htmlList += "<a href=""+filename+"">"+filename+"</a>\n"
             # save main message
             else:
                 filename = "index.html"
                 if part.get_content_charset() is None:
                     text = part.get_payload(decode=True)
-                    with open(os.path.join(args.directory, filename), 'wb') as f:
+                    with open(os.path.join(args.directory, filename), "wb") as f:
                         f.write(text)
                 else:
                     charset = part.get_content_charset()
                     text = str(part.get_payload(decode=True), str(charset),
-                               "ignore").encode('utf8', 'replace')
-                    with open(os.path.join(args.directory, filename), 'wb') as f:
+                               "ignore").encode("utf8", "replace")
+                    with open(os.path.join(args.directory, filename), "wb") as f:
                         f.write(text)
-                    if part.get_content_type() == 'text/html':
-                        msgType = 'html'
+                    if part.get_content_type() == "text/html":
+                        msgType = "html"
     # if it's a single part message, let's export it into
     # a single file we will customize later
     else:
         filename = "index.html"
         if msg.get_content_charset() is None:
-            with open(os.path.join(args.directory, filename), 'wb') as f:
+            with open(os.path.join(args.directory, filename), "wb") as f:
                 f.write(msg.get_payload(decode=True))
         else:
             text = str(msg.get_payload(decode=True), msg.get_content_charset(),
-                       'ignore').encode('utf8', 'replace')
-            with open(os.path.join(args.directory, filename), 'wb') as f:
+                       "ignore").encode("utf8", "replace")
+            with open(os.path.join(args.directory, filename), "wb") as f:
                 f.write(text)
         if msg.get_content_type() == "text/html":
-            msgType = 'html'
+            msgType = "html"
 
     # Compress attachments
     if has_attachments:
-        tar = tarfile.open(os.path.join(args.directory, 'attachments.tgz'), "w:gz")
+        tar = tarfile.open(os.path.join(args.directory, "attachments.tgz"), "w:gz")
         tar.add(args.directory)
         tar.close()
 
@@ -238,7 +238,7 @@ def main():
 
     # Format index.html
     # any <html> tag already there?
-    with open(os.path.join(args.directory, "index.html"), 'r') as f:
+    with open(os.path.join(args.directory, "index.html"), "r") as f:
         for line in f:
             if re.match("<html>", line):
                 has_html_header_tag = True
@@ -255,12 +255,12 @@ def main():
         if msgType == "html":
             # correct html encoding
             if re.search("charset", line):
-                pattern = re.compile('charset=[\sa-z0-9A-Z-]+', re.IGNORECASE)
-                line = re.sub(pattern, 'charset=UTF-8', line)
+                pattern = re.compile("charset=[\sa-z0-9A-Z-]+", re.IGNORECASE)
+                line = re.sub(pattern, "charset=UTF-8", line)
             # add attachment list
             if re.match("</body>", line):
-                pattern = re.compile(r'</body>.*$', re.IGNORECASE)
-                line = re.sub(pattern, '', line)
+                pattern = re.compile(r"</body>.*$", re.IGNORECASE)
+                line = re.sub(pattern, "", line)
                 if has_attachments:
                     print(line+template.format(htmlList))
                 else:
@@ -269,7 +269,7 @@ def main():
                 break
             elif re.search("</html>", line):
                 pattern = re.compile("</html>", re.IGNORECASE)
-                line = re.sub(pattern, '', line)
+                line = re.sub(pattern, "", line)
                 if has_attachments:
                     print(line+template.format(htmlList))
                 else:
@@ -281,15 +281,15 @@ def main():
 
     if has_attachments:
         if (msgType == "txt"):
-            with open(os.path.join(args.directory, "index.html"), 'a') as f:
+            with open(os.path.join(args.directory, "index.html"), "a") as f:
                 f.write("</pre>"+template.format(htmlList)+"</html>")
         if (msgType == "html" and not has_html_header_tag):
-            with open(os.path.join(args.directory, "index.html"), 'a') as f:
+            with open(os.path.join(args.directory, "index.html"), "a") as f:
                 f.write(template.format(htmlList)+"</html>")
     else:
-        with open(os.path.join(args.directory, "index.html"), 'a') as f:
+        with open(os.path.join(args.directory, "index.html"), "a") as f:
             f.write("</html>")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
