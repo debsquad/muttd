@@ -58,7 +58,14 @@ def process_part(part):
 def process_parts(msg):
     """Recursively process message parts and only focus on leafs."""
     process_part(msg)
-    for part in msg.walk():
+    parts = list(msg.walk())
+
+    # If the message has both plain and html, skip the plain text.
+    content_types = [part.get_content_type() for part in parts]
+    if "text/html" in content_types:
+         parts = [p for p in parts if p.get_content_type() != "text/plain"]
+
+    for part in parts:
         if msg != part:
             process_parts(part)
 
