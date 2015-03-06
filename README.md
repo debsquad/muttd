@@ -25,10 +25,11 @@ muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve r
 
 2. Edit `muttd.py` and modify configuration variables to fit your needs, especially `DIR` which represents the working path used by both the daemon and extractor. Don't forget to create the folder on the disk if needed.
 
-        HOST = "127.0.0.1"                                                          
-        PORT_NUMBER = 8090                                                          
-        DIR = os.path.expanduser("~/.muttd/message")
-
+    ```py
+    HOST = "127.0.0.1"                                                          
+    PORT_NUMBER = 8090                                                          
+    DIR = os.path.expanduser("~/.muttd/message")
+    ```
 3. Edit your `~/.muttrc` and define new maccros for muttd. _p_ will pipe current message and process its output using `extractmail.py`.
 
         macro pager p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
