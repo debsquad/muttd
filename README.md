@@ -36,6 +36,6 @@ Entry is instantly available on your web browser:
 ```
 $ firefox http://localhost:8090/
 ```
-## Notes
-
 ## Authors
+* Bertrand Janin [website](http://tamentis.com/)
+* Vincent Tantardini [website](http://www.vtcreative.fr/)
