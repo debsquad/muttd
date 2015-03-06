@@ -10,21 +10,21 @@ muttd is a mail previewer for Mutt designed to improve readability and access to
 
 ## Installation
 1. Extract the project archive wherever you want on the disk.
-   ```
-   $ cd ~/.mutt && wget https://github.com/debsquad/muttd/archive/master.zip 
-   $ unzip master.zip && rm master.zip
-   ```
+```
+$ cd ~/.mutt && wget https://github.com/debsquad/muttd/archive/master.zip 
+$ unzip master.zip && rm master.zip
+```
 2. Edit _muttd.py_ and modify configuration variables to fit your needs, especially _DIR_ which represents the working path used by both the daemon and extractor. Don't forget to create the folder on the disk if needed.
-   ```
-   HOST = "127.0.0.1"                                                          
-   PORT_NUMBER = 8090                                                          
-   DIR = os.path.expanduser("~/.muttd/message")
+```
+HOST = "127.0.0.1"                                                          
+PORT_NUMBER = 8090                                                          
+DIR = os.path.expanduser("~/.muttd/message")
 ```
 3. Edit your _~/.muttrc_ and define new maccros for muttd. The shortcut defined (_p_ here) will pipe current message and process its output with _extractmail.py_.
-   ```
-   macro pager p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
-   macro index p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
-   ```
+```
+macro pager p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
+macro index p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
+```
 ## Usage
 
 ## Notes
