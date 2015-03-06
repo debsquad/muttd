@@ -2,16 +2,17 @@ muttd
 =====
 muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve readability and access to HTML mails and/or attachments. It is based on 3 interoperating components:
 * an extractor, treating each part of a MIME mail and writing them to the disk
-* a renderer, generating a page displaying the extracted results
-* a minimal HTTP daemon, serving generated results localy
+* a renderer, creating a page formated with extracted results
+* a minimal HTTP daemon, serving the page and attachments localy
 
 ## Features
 * Format and preview any "text/*" MIME based message
   * Display inline attachments
   * Normalize encoding
-* Download each attachment individually
-* Download a tarball containing all attachments
-* Download the original source file
+* Previewer sidebar
+  * Download each attachment individually
+  * Download a tarball containing all attachments
+  * Download the original source file
 
 ## Requirements
 * python 3.4: https://www.python.org/
