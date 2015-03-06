@@ -5,6 +5,14 @@ muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve r
 * a renderer, generating a page displaying the extracted results
 * a minimal HTTP daemon, serving generated results localy
 
+## Features
+* Format and preview any "text/*" MIME based message
+  * Display inline attachments
+  * Normalize encoding
+* Download each attachment individually
+* Download a tarball containing all attachments
+* Download the original source file
+
 ## Requirements
 * python 3.4: https://www.python.org/
 
