@@ -1,6 +1,6 @@
 muttd
 =====
-muttd is a mail previewer for Mutt designed to improve readability and access to HTML mails and/or attachments. It is based on 3 interoperating components:
+muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve readability and access to HTML mails and/or attachments. It is based on 3 interoperating components:
 * an extractor, treating each part of a MIME mail and writing them to the disk
 * a renderer, generating a page displaying the extracted results
 * a minimal HTTP daemon, serving generated results localy
