@@ -36,7 +36,7 @@ muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve r
 ## Usage
 Start the daemon: 
 ```
-$ cd ~/.mutt/muttd && ./muttd
+$ cd ~/.mutt/muttd && ./muttd.py
 ```
 Run mutt and press the previously defined maccro on any index entry or pager.
 
