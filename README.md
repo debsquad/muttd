@@ -20,13 +20,22 @@ muttd is a mail previewer for Mutt designed to improve readability and access to
         PORT_NUMBER = 8090                                                          
         DIR = os.path.expanduser("~/.muttd/message")
 
-3. Edit your _~/.muttrc_ and define new maccros for muttd. The shortcut defined (_p_ here) will pipe current message and process its output with _extractmail.py_.
+3. Edit your _~/.muttrc_ and define new maccros for muttd. Defined shortcut (_p_) will pipe current message and process its output using _extractmail.py_.
 
         macro pager p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
         macro index p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
 
 ## Usage
+Start the daemon: 
+```
+$ ~/.mutt/muttd/muttd
+```
+Run mutt and press the previously defined maccro on any index entry or pager.
 
+Entry is instantly available on your web browser: 
+```
+$ firefox http://localhost:8090/
+```
 ## Notes
 
 ## Authors
