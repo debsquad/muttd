@@ -30,9 +30,10 @@ def process_part(part):
         with open(os.path.join(args.directory, filename), "wb") as f:
             f.write(part.get_payload(decode=True))
         attachments.append(filename)
-        # This is an inline attachement, store its cid and filename.
-        if 'inline' in part.get_all('Content-Disposition')[0]:
-            inline_images[part.get_all('Content-ID')[0]] = filename
+        # This is an inline attachment, store its cid and filename.
+        cid = part.get('Content-ID')
+        if cid:
+            inline_images[cid[1:-1]] = filename
         return
 
     # Ignore any part that doesn't contain data
@@ -113,10 +114,11 @@ if attachments:
     tar.close()
 
 # Inline images
+print(inline_images)
 if inline_images:
     for idx, i in enumerate(messages):
         for p in sorted(inline_images.keys()):
-            messages[idx] = i.replace('cid:' + p[1:-1], inline_images[p])
+            messages[idx] = i.replace('cid:' + p, inline_images[p])
 
 # Keep a copy of the file for download
 with open(os.path.join(args.directory, "email.eml"), "w") as fp:
