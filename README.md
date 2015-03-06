@@ -5,6 +5,9 @@ muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve r
 * a renderer, creating a page formated with extracted results
 * a minimal HTTP daemon, serving the page and attachments localy
 
+## Requirements
+* python 3.4: https://www.python.org/
+
 ## Features
 * Format and preview "text/*" based MIME message
   * Display inline attachments
@@ -13,9 +16,6 @@ muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve r
   * Download each attachment individually
   * Download a tarball containing all attachments
   * Download the original source file
-
-## Requirements
-* python 3.4: https://www.python.org/
 
 ## Installation
 1. Extract the project archive wherever you want on the disk.
