@@ -1,14 +1,30 @@
 muttd
 =====
-muttd is a mail previewer for Mutt designed to improve readability and access to HTML mails and/or attachments. It is based on 2 interoperating components:
-* an extractor, treating each part of a MIME mail and writing them to disk
-* a minimal HTTP daemon, serving generated results locally
+muttd is a mail previewer for Mutt designed to improve readability and access to HTML mails and/or attachments. It is based on 3 interoperating components:
+* an extractor, treating each part of a MIME mail and writing them to the disk
+* a renderer, generating a page displaying the extracted results
+* a minimal HTTP daemon, serving generated results localy
 
 ## Requirements
-* Python 3.4: https://www.python.org/
+* python 3.4: https://www.python.org/
 
 ## Installation
-
+1. Extract the project archive wherever you want on the disk.
+```
+$ cd ~/.mutt && wget https://github.com/debsquad/muttd/archive/master.zip 
+$ unzip master.zip && rm master.zip
+```
+2. Edit _muttd.py_ and modify configuration variables to fit your needs, especially _DIR_ which represents the working path used by both the daemon and extractor. Don't forget to create the folder on the disk if needed.
+```
+HOST = "127.0.0.1"                                                          
+PORT_NUMBER = 8090                                                          
+DIR = os.path.expanduser("~/.muttd/message")
+```
+3. Edit your _~/.muttrc_ and define new maccros for muttd. The shortcut defined (_p_ here) will pipe current message and process its output with _extractmail.py_.
+```
+macro pager p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
+macro index p "<enter-command>unset wait_key<enter><pipe-entry>cat | ~/.mutt/muttd/extractmail.py -d ~/.muttd/message<enter>"
+```
 ## Usage
 
 ## Notes
