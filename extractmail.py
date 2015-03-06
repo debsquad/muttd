@@ -19,16 +19,21 @@ import page
 charset_re = re.compile('charset=[\sa-z0-9A-Z-]+', re.IGNORECASE)
 messages = []
 attachments = []
-
+inline_images = {}
 
 def process_part(part):
     """Extract the attachment or message within a single part."""
     # This is an attachment, save it on disk and keep track of its name.
     if part.get_filename():
         filename = part.get_filename()
+        if 'inline' in part.get_all('Content-Disposition')[0]:
+            inline_images[part.get_all('Content-ID')[0]] = filename
         with open(os.path.join(args.directory, filename), "wb") as f:
             f.write(part.get_payload(decode=True))
         attachments.append(filename)
+        # This is an inline attachement, store its cid and filename.
+        if 'inline' in part.get_all('Content-Disposition')[0]:
+            inline_images[part.get_all('Content-ID')[0]] = filename
         return
 
     # Ignore any part that doesn't contain data
@@ -107,6 +112,12 @@ if attachments:
     for attachment in attachments:
         tar.add(os.path.join(args.directory, attachment))
     tar.close()
+
+# Inline images
+if inline_images:
+    for idx, i in enumerate(messages):
+        for p in sorted(inline_images.keys()):
+            messages[idx] = i.replace('cid:' + p[1:-1], inline_images[p])
 
 # Keep a copy of the file for download
 with open(os.path.join(args.directory, "email.eml"), "w") as fp:
