@@ -31,9 +31,10 @@ def process_part(part):
             f.write(part.get_payload(decode=True))
         attachments.append(filename)
         # This is an inline attachment, store its cid and filename.
-        cid = part.get('Content-ID')[1:-1]
+        cid = part.get('Content-ID')
         if cid:
-            inline_images[cid] = filename
+            # cids are wrapped in <>
+            inline_images[cid[1:-1]] = filename
         return
 
     # Ignore any part that doesn't contain data
