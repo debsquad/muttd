@@ -1,6 +1,6 @@
 muttd
 =====
-muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve readability and access to HTML mails and/or attachments. It is based on 3 interoperating components:
+muttd is a standalone plugin for [mutt](http://www.mutt.org/) designed to improve readability and access to HTML mails and/or attachments. It is based on 3 interoperating components:
 * an extractor, treating each part of a MIME mail and writing them to the disk
 * a renderer, creating a page formated with extracted results
 * a minimal HTTP daemon, serving the page and attachments localy
@@ -9,10 +9,9 @@ muttd is a mail previewer for [mutt](http://www.mutt.org/) designed to improve r
 * python 3.4: https://www.python.org/
 
 ## Features
-* Format and preview "text/*" based MIME message
+* Preview "text/*" based MIME message from your preferred HTTP browser
   * Display inline attachments
-  * Normalize encoding
-* Previewer sidebar
+* Sidebar
   * Download each attachment individually
   * Download a tarball containing all attachments
   * Download the original source file
