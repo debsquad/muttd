@@ -21,6 +21,7 @@ messages = []
 attachments = []
 inline_images = {}
 
+
 def process_part(part):
     """Extract the attachment or message within a single part."""
     # This is an attachment, save it on disk and keep track of its name.
