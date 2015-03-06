@@ -9,7 +9,7 @@ muttd is a standalone plugin for [mutt](http://www.mutt.org/) designed to improv
 * python 3.4: https://www.python.org/
 
 ## Features
-* Preview "text/*" based MIME message from your preferred HTTP browser
+* Preview any "text/*" based MIME message from your HTTP browser
   * Display inline attachments
 * Sidebar
   * Download each attachment individually
