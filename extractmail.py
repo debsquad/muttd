@@ -26,8 +26,6 @@ def process_part(part):
     # This is an attachment, save it on disk and keep track of its name.
     if part.get_filename():
         filename = part.get_filename()
-        if 'inline' in part.get_all('Content-Disposition')[0]:
-            inline_images[part.get_all('Content-ID')[0]] = filename
         with open(os.path.join(args.directory, filename), "wb") as f:
             f.write(part.get_payload(decode=True))
         attachments.append(filename)
