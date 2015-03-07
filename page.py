@@ -141,7 +141,7 @@ body,
 }}
 
 .content-wrap {{
-    overflow-y: scroll;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }}
 
