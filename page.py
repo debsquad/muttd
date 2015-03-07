@@ -17,10 +17,11 @@ body = """
 </head>
 
 <body>
+<div class="hidden-trigger"></div>
 <div class="menu-wrap">
     <nav class=menu>
         <div class="icon-list">
-            <span>Options</span>
+            <span>Attachments</span>
             {attachments}
             {all_attachments_button}
             <a href='/email.eml'>
@@ -49,6 +50,7 @@ function toggle_menu(){{
 }}
 document.querySelector('#open-button').addEventListener('click', toggle_menu )
 document.querySelector('#close-button').addEventListener('click', toggle_menu )
+document.querySelector('.hidden-trigger').addEventListener('click', toggle_menu )
 </script>
 """
 
@@ -118,15 +120,23 @@ body,
     box-sizing: padding-box;
 }}
 
-.content > div,
-.content > pre {{
+.hidden-trigger {{
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background: transparent;
+    display: none;
+    z-index: 11;
+}}
+
+.content-wrap .content > div,
+.content-wrap .content > pre {{
     min-height: 100%;
     margin: 0;
     padding: 36px 114px 0;
 }}
 
-.content table,
-.content > center {{
+.content-wrap .content table,
+.content-wrap .content > center {{
     min-height: 100%!important;
 }}
 
@@ -141,7 +151,7 @@ body,
     margin: 0!important;
 }}
 
-.content::before {{
+.content-wrap .content::before {{
     position: absolute;
     top: 0;
     left: 0;
@@ -246,13 +256,13 @@ body,
     color: #373A47;
 }}
 
-.menu {{
+.menu-wrap .menu {{
     height: 100%;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }}
 
-.icon-list {{
+.menu-wrap .icon-list {{
     opacity: 1;
     -webkit-transition: opacity 0s 0.4s;
     transition: opacity 0s 0.4s;
@@ -260,8 +270,8 @@ body,
     transition-timing-function: cubic-bezier(0.7,0,0.3,1);
 }}
 
-.icon-list span,
-.icon-list a {{
+.menu-wrap .icon-list span,
+.menu-wrap .icon-list a {{
     display: block;
     padding: 0.8em;
 }}
@@ -292,6 +302,10 @@ body,
     transition-timing-function: cubic-bezier(0.7,0,0.3,1);
     -webkit-transform: translate3d(0,0,0);
     transform: translate3d(0,0,0);
+}}
+
+.show-menu .hidden-trigger {{
+    display: block;
 }}
 </style>
 """
