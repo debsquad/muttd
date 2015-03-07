@@ -15,11 +15,13 @@ footer = """
 
 body = """
 </head>
-
 <body>
+
 <div class="hidden-trigger"></div>
+
 <div class="menu-wrap">
     <nav class=menu>
+
         <div class="icon-list">
             <span>Attachments</span>
             {attachments}
@@ -28,12 +30,14 @@ body = """
                 <i class="icon-mail"></i>Raw email <small>(.eml)</small>
             </a>
         </div>
+
         <button class="close-button" id="close-button">Close Menu</button>
     </nav>
 </div>
 
 <button class="menu-button" id="open-button">
     <i class='icon-cog'></i>
+    {attachments_count}
 </button>
 
 <div class="content-wrap">
@@ -192,6 +196,21 @@ body,
 }}
 .menu-button:hover {{ opacity: 0.6; }}
 
+.menu-button .count {{
+    position: absolute;
+    display: inline-block;
+    top: -4px;
+    right: 1px;
+    width: 17px;
+    height: 17px;
+    border-radius: 9px;
+    line-height: 16px;
+    font-family: 'ralewaybold', Arial, sans-serif;
+    font-size: .3em;
+    letter-spacing: -1px;
+    text-align: center;
+    background: #ddd;
+}}
 /* Close Button */
 .menu-wrap .close-button {{
     width: 1em;
@@ -342,9 +361,11 @@ def render(subject, messages, attachments):
         all_attachments_button = ("<a href='/attachments.tgz'>"
                                   "<i class='icon-file-archive'></i>"
                                   "All attachment <small>(.tgz)</small></a>")
+        attachments_count = "<span class=count>"+str(len(attachments))+"</span>"
     else:
         attachments = ""
         all_attachments_button = ""
+        attachments_count = ""
 
     messages = "\n".join(messages)
 
@@ -352,5 +373,6 @@ def render(subject, messages, attachments):
         subject=subject,
         attachments="\n".join(attachments),
         all_attachments_button=all_attachments_button,
+        attachments_count=attachments_count,
         messages=messages,
     )
