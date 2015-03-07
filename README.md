@@ -2,7 +2,7 @@ muttd
 =====
 muttd is a python based plugin for [mutt](http://www.mutt.org/) designed to improve readability and access to a mail and its attachments. It is based on 3 interoperating components:
 * an extractor, treating each part of a MIME mail and writing them to the disk
-* a renderer, creating a page formated with extracted results
+* a renderer, creating a web page formated with extracted results
 * a minimal HTTP daemon, serving the page and attachments localy
 
 ## Requirements

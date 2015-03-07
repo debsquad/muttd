@@ -336,9 +336,9 @@ def render(subject, messages, attachments):
     if attachments:
         for idx, f in enumerate(attachments):
             # Cut the attachment name if it is too long for the menu container.
-            fname = f[:18] + '...' if (len(f) > 22) else f
+            url_text = f[:18] + '...' if (len(f) > 22) else f
             attachments[idx] = ("<a href=\""+f+"\" title=\""+f+"\">"
-                                "<i class='icon-download'></i>"+fname+"</a>")
+                                "<i class='icon-download'></i>"+url_text+"</a>")
         all_attachments_button = ("<a href='/attachments.tgz'>"
                                   "<i class='icon-file-archive'></i>"
                                   "All attachment <small>(.tgz)</small></a>")
