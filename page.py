@@ -182,6 +182,13 @@ body,
     font-size: 2.25em;
     color: #373a47;
     background: transparent;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    transform: scale(1);
+    -webkit-transition: -webkit-transform 0.4s;
+    transition: transform 0.4s;
+    -webkit-transition-timing-function: cubic-bezier(0.7,0,0.3,1);
+    transition-timing-function: cubic-bezier(0.7,0,0.3,1);
 }}
 .menu-button:hover {{ opacity: 0.6; }}
 
@@ -306,6 +313,17 @@ body,
 
 .show-menu .hidden-trigger {{
     display: block;
+}}
+
+.show-menu .menu-button {{
+    --webkit-transform : scale(0);
+    transform : scale(0);
+    -webkit-transition: -webkit-transforn 0.6s;
+    transition: transform 0.6s;
+    -webkit-transition-timing-function: cubic-bezier(0.7,0,0.3,1);
+    transition-timing-function: cubic-bezier(0.7,0,0.3,1);
+}}
+
 }}
 </style>
 """
