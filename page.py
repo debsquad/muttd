@@ -90,7 +90,7 @@ fonts = """
     font-variant: normal;
     text-transform: none;
     line-height: 1em;
-    margin-right: .4em;
+    margin-right: .5em;
 }}
 .icon-download:before {{ content: '\e800'; }} /* '' */
 .icon-file-archive:before {{ content: '\e801'; }} /* '' */
@@ -184,7 +184,7 @@ body,
     height: 1.25em;
     border: none;
     font-size: 2.25em;
-    color: #373a47;
+    color: #737373;
     background: transparent;
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
@@ -200,16 +200,26 @@ body,
     position: absolute;
     display: inline-block;
     top: -4px;
-    right: 5px;
-    width: 17px;
-    height: 17px;
-    border-radius: 9px;
-    line-height: 16px;
+    right: 4px;
+    width: 19px;
+    height: 19px;
+    line-height: 17px;
     font-family: 'ralewaybold', Arial, sans-serif;
-    font-size: .3em;
-    letter-spacing: -1px;
+    font-size: .4em;
     text-align: center;
-    background: #ddd;
+    color: white;
+    z-index: 1;
+    letter-spacing: -1px;
+}}
+.menu-button .count::before {{
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 1px; right: 0;
+    width: 19px; height: 19px;
+    border-radius: 10px;
+    background: #cb4438;
+    content: '';
+    z-index: -1;
 }}
 /* Close Button */
 .menu-wrap .close-button {{
@@ -234,7 +244,7 @@ body,
     height: 100%;
     top: 0;
     left: 50%;
-    background: #bdc3c7;
+    background: #abb2b8;
 }}
 
 .menu-wrap .close-button::before {{
@@ -249,18 +259,18 @@ body,
 
 .menu-wrap i {{
     opacity: .5;
-    color: #c94e50;
+    color: #cb4438;
 }}
 
 .menu-wrap a,
 .menu-wrap a:visited{{
     text-decoration: none!important;
     outline: none;
-    color: #B8B7AD!important;
+    color: #abb2b8!important;
 }}
 
 .menu-wrap a:hover,
-.menu-wrap a:focus {{ color: #c94e50!important; }}
+.menu-wrap a:focus {{ color: #cb4438!important; }}
 
 /* Menu */
 .menu-wrap {{
@@ -279,7 +289,7 @@ body,
     transition: transform 0.3s;
     -webkit-transition-timing-function: cubic-bezier(0.7,0,0.3,1);
     transition-timing-function: cubic-bezier(0.7,0,0.3,1);
-    color: #373A47;
+    color: #323232;
 }}
 
 .menu-wrap .menu {{
