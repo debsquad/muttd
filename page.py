@@ -316,7 +316,11 @@ template = header + normalize + fonts + styles + body + scripts + footer
 
 def render(subject, messages, attachments):
     if attachments:
-        attachments = ["<a href=\""+f+"\"><i class='icon-download'></i>"+f+"</a>" for f in attachments]
+        for idx, f in enumerate(attachments):
+            # Cut the attachment name if it is too long for the menu container.
+            fname = f[:20] + '...' if (len(f) > 22) else f
+            attachments[idx] = ("<a href=\""+f+"\" title=\""+f+"\">"
+                                "<i class='icon-download'></i>"+fname+"</a>")
         all_attachments_button = ("<a href='/attachments.tgz'>"
                                   "<i class='icon-file-archive'></i>"
                                   "All attachment <small>(.tgz)</small></a>")
