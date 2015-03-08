@@ -200,7 +200,7 @@ body,
     position: absolute;
     display: inline-block;
     top: -4px;
-    right: 4px;
+    right: 5px;
     width: 19px;
     height: 19px;
     line-height: 17px;
