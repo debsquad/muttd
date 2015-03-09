@@ -84,7 +84,7 @@ def parse_args():
                         default=os.path.expanduser("~/.muttd/message"),
                         help="""Unpack the MIME message into the named directory,
                         which will be created if it doesn't already exist.""")
-    parser.add_argument("mailfile", nargs="?", type=argparse.FileType("r"),
+    parser.add_argument("mailfile", nargs="?", type=argparse.FileType("rb"),
                         default=sys.stdin)
     return parser.parse_args()
 
@@ -100,7 +100,7 @@ def cleanup_directory(path):
 
 
 args = parse_args()
-msgdata = args.mailfile.read()
+msgdata = str(args.mailfile.read())
 msg = email.message_from_string(msgdata)
 
 cleanup_directory(args.directory)
