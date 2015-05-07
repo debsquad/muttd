@@ -26,7 +26,7 @@ def process_part(part):
     """Extract the attachment or message within a single part."""
     # This is an attachment, save it on disk and keep track of its name.
     if part.get_filename():
-        filename = part.get_filename()
+        filename = part.get_filename().replace("\n", "")
         with open(os.path.join(args.directory, filename), "wb") as f:
             f.write(part.get_payload(decode=True))
         attachments.append(filename)
