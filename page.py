@@ -1,5 +1,8 @@
 #!/usr/bin/env python3.4
 
+from urllib.parse import quote
+
+
 header = """
 <!DOCTYPE html>
 <html>
@@ -366,7 +369,7 @@ def render(subject, messages, attachments):
         for idx, f in enumerate(attachments):
             # Cut the attachment name if it is too long for the menu container.
             url_text = f[:18] + "..." if (len(f) > 22) else f
-            attachments[idx] = ("<a href=\""+f+"\" title=\""+f+"\">"
+            attachments[idx] = ("<a href=\""+quote(f)+"\" title=\""+f+"\">"
                                 "<i class='icon-download'></i>"+url_text+"</a>")
         all_attachments_button = ("<a href='/attachments.tgz'>"
                                   "<i class='icon-file-archive'></i>"
