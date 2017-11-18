@@ -4,7 +4,7 @@ import urllib
 import os
 import mimetypes
 
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from os import curdir, sep
 from os.path import basename
 
@@ -32,10 +32,11 @@ class MuttdHandler(BaseHTTPRequestHandler):
 
         # unquote() handles URL encoding and basename is a quick way to
         # avoid users from requesting files outside of the path (for
-        # example ../../../../etc/passwd)
-        path = basename(urllib.unquote(self.path))
+        # example ../../../../etc/passwd). Not that anybody should be serving
+        # muttd on a public IP...
+        path = basename(urllib.parse.unquote(self.path))
         try:
-            f = open(curdir + sep + path)
+            f = open(curdir + sep + path, "rb")
         except IOError:
             self.send_error(404, "File Not Found: {}".format(self.path))
             return
@@ -46,17 +47,24 @@ class MuttdHandler(BaseHTTPRequestHandler):
         f.close()
 
 
-if not os.path.exists(DIR):
-    os.makedirs(DIR)
-os.chdir(DIR)
+class ServeCommand(object):
 
-# Create a web server and define the handler to manage the incoming request
-server = HTTPServer((HOST, PORT_NUMBER), MuttdHandler)
-print("Started httpserver on port {}".format(PORT_NUMBER))
+    def __init__(self, message_path, address, port):
+        self.message_path = message_path
+        self.address = address
+        self.port = port
 
-try:
-    # Wait forever for incoming http requests
-    server.serve_forever()
-except KeyboardInterrupt:
-    print("^C received, shutting down the web server")
-    server.socket.close()
+    def run(self):
+        if not os.path.exists(self.message_path):
+            os.makedirs(self.message_path)
+        os.chdir(self.message_path)
+
+        server = HTTPServer((self.address, self.port), MuttdHandler)
+        print("Started muttd server on http://{}:{}/"
+              .format(self.address, self.port))
+
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("^C received, shutting down the web server")
+            server.socket.close()

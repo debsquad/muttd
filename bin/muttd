@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import argparse
+import configparser
+import os.path
+
+from muttd.serve import ServeCommand
+from muttd.extract import ExtractCommand
+
+
+if __name__ == '__main__':
+    cli_parser = argparse.ArgumentParser(description="Viewer for mutt")
+    cli_parser.add_argument("command")
+    cli_parser.add_argument("-c", "--config",
+                        default=os.path.expanduser("~/.muttd/config"))
+    cli_args = cli_parser.parse_args()
+
+    cfg_parser = configparser.ConfigParser()
+    cfg_parser.read(cli_args.config)
+
+    message_path = cfg_parser.get(
+        "general",
+        "message_path",
+        fallback=os.path.expanduser("~/.muttd/message"),
+    )
+    server_address = cfg_parser.get("server", "address", fallback="127.0.0.1")
+    server_port = int(cfg_parser.get("server", "port", fallback="8090"))
+
+    if cli_args.command == "serve":
+        command = ServeCommand(
+            message_path=message_path,
+            address=server_address,
+            port=server_port,
+        )
+    elif cli_args.command == "extract":
+        command = ExtractCommand(
+            message_path=message_path,
+        )
+
+    command.run()
