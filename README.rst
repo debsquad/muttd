@@ -1,11 +1,13 @@
 muttd
 =====
-muttd is a Python based plugin for mutt (http://www.mutt.org/) designed to
+muttd is a Python-based plugin for mutt (http://www.mutt.org/) designed to
 improve readability and access to a mail and its attachments (locally and
-remotely via SSH). It is based on 3 interoperating components:
-- an extractor, treating each part of a MIME mail and writing them to the disk
-- a renderer, creating a web page formatted with extracted results
-- a minimal HTTP daemon, serving the page and attachments locally
+remotely via SSH) through a browser. It is based on 2 commands:
+
+- ``muttd extract`` - called from mutt, it extract each part of a MIME mail and
+  write them to disk
+- ``muttd serve`` - long running process which serve that email via HTTP, with
+  all its attachments
 
 Requirements
 ------------
@@ -14,8 +16,11 @@ Requirements
 Features
 --------
 - Preview any ``text/*`` based MIME message from your HTTP browser
+
   * Display inline attachments
+
 - Sidebar
+
   * Download each attachment individually
   * Download a tarball containing all attachments
   * Download the original source file (open it in Mail.app, Outlook, etc.)
@@ -25,13 +30,11 @@ Installation
 1. Install via your OS' packaging system or pip::
 
     $ pip install muttd
-
 2. Edit your ``~/.muttrc`` and define new macros for muttd. ``A`` will pipe
 current message and process its output using ``extractmail.py``::
 
     macro pager A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
     macro index A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
-
 3. Run ``muttd server`` in a tmux/screen tab (or supervisord running as your
 user if you really must).
 
@@ -52,15 +55,16 @@ Usage
 -----
 Assuming the muttd server is running and you have used the above mutt macro,
 you can then:
+
 1. Highlight a message or open a message in mutt and type ``A``.
 2. Open your browser on http://localhost:8090/
 
 Remote usage
 ------------
-If like me you run mutt on a server, you will want to download attachment and
-render HTML emails without having to move them around.  It's easy to create a
-port forwarding with SSH as you connect to your server to make that
-seamless.  Add the following to your ``~/.ssh/config``::
+If you run mutt on a server, you will want to download attachment and render
+HTML emails without having to move them around.  It's easy to create a port
+forwarding with SSH as you connect to your server to make that seamless.  Add
+the following to your ``~/.ssh/config``::
 
     Host your_server
         LocalForward 127.0.0.1:8090 127.0.0.1:8090

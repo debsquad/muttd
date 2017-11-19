@@ -1,5 +1,5 @@
-# Copyright (c) 2017 Bertrand Janin
-# Copyright (c) 2015 Bertrand Janin, Vincent Tantardini
+# Copyright (c) 2017 Bertrand Janin <b@janin.com>
+# Copyright (c) 2015 Vincent Tantardini, Bertrand Janin
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above

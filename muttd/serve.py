@@ -1,4 +1,23 @@
-#!/usr/bin/env python
+# Copyright (c) 2017 Bertrand Janin <b@janin.com>
+# Copyright (c) 2015 Vincent Tantardini, Bertrand Janin
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+"""muttd server command and HTTP request handler.
+
+Command serving the email files via HTTP.
+"""
+
 
 import urllib
 import os
@@ -9,15 +28,10 @@ from os import curdir, sep
 from os.path import basename
 
 
-HOST = "127.0.0.1"
-PORT_NUMBER = 8080
-DIR = os.path.expanduser("~/.muttd/message")
-
-
-class MuttdHandler(BaseHTTPRequestHandler):
+class MuttdRequestHandler(BaseHTTPRequestHandler):
 
     """
-    This class will handles any incoming request from the browser.
+    Handle any incoming request from the browser.
     """
 
     def do_GET(self):
@@ -49,6 +63,10 @@ class MuttdHandler(BaseHTTPRequestHandler):
 
 class ServeCommand(object):
 
+    """
+    Create an HTTP server with the message path as root directory.
+    """
+
     def __init__(self, message_path, address, port):
         self.message_path = message_path
         self.address = address
@@ -59,7 +77,7 @@ class ServeCommand(object):
             os.makedirs(self.message_path)
         os.chdir(self.message_path)
 
-        server = HTTPServer((self.address, self.port), MuttdHandler)
+        server = HTTPServer((self.address, self.port), MuttdRequestHandler)
         print("Started muttd server on http://{}:{}/"
               .format(self.address, self.port))
 
