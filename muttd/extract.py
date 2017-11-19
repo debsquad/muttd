@@ -102,8 +102,7 @@ class ExtractCommand(object):
                 os.remove(f)
 
     def run(self):
-        fp = open("/Users/bertrand/tmp/inbox/cur/1483313342.91470_0.prometheus.tamentis.com:2,S")
-        # msgdata = sys.stdin.read()
+        msgdata = sys.stdin.read()
         msgdata = fp.read()
         msg = email.message_from_string(msgdata)
 
