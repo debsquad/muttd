@@ -29,13 +29,17 @@ Features
 Installation
 ------------
 1. Install via your OS' packaging system or pip::
-    $ pip install muttd
+
+      $ pip install muttd
+   
 2. Edit your ``~/.muttrc`` and define new macros for muttd. ``A`` will pipe
 current message and process its output using ``extractmail.py``::
-    macro pager A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
-    macro index A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
+
+       macro pager A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
+       macro index A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
+
 3. Run ``muttd server`` in a tmux/screen tab (or supervisord running as your
-user if you really must).
+   user if you really must).
 
 Configuration
 -------------
