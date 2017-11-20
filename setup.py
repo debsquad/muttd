@@ -39,6 +39,7 @@ setup(
         "Topic :: Communications :: Email",
     ],
     install_requires=[
+        "six",
     ],
     test_requires=[
         "nose",

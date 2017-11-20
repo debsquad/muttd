@@ -11,7 +11,8 @@ remotely via SSH) through a browser. It is based on 2 commands:
 
 Requirements
 ------------
-- python 3.4+: https://www.python.org/
+- python 2.7+ or 3.4+: https://www.python.org/
+- six
 
 Features
 --------

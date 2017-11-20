@@ -96,14 +96,13 @@ class ExtractCommand(object):
         """Create or clean up folder."""
         try:
             os.makedirs(self.message_path)
-        except FileExistsError:
+        except:
             files = glob.glob(os.path.join(self.message_path, "*"))
             for f in files:
                 os.remove(f)
 
     def run(self):
         msgdata = sys.stdin.read()
-        msgdata = fp.read()
         msg = email.message_from_string(msgdata)
 
         self._cleanup_message_path()
@@ -136,4 +135,4 @@ class ExtractCommand(object):
             attachments=self.attachments,
         )
         with open(os.path.join(self.message_path, "index.html"), "w") as f:
-            f.write(index_html)
+            f.write(index_html.encode("utf-8"))

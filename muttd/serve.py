@@ -23,7 +23,8 @@ import urllib
 import os
 import mimetypes
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from six.moves.urllib.parse import unquote
 from os import curdir, sep
 from os.path import basename
 
@@ -48,7 +49,7 @@ class MuttdRequestHandler(BaseHTTPRequestHandler):
         # avoid users from requesting files outside of the path (for
         # example ../../../../etc/passwd). Not that anybody should be serving
         # muttd on a public IP...
-        path = basename(urllib.parse.unquote(self.path))
+        path = basename(unquote(self.path))
         try:
             f = open(curdir + sep + path, "rb")
         except IOError:
