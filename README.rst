@@ -28,12 +28,15 @@ Features
 
 Installation
 ------------
-1. Install via your OS' packaging system or pip::
+1. Install via your OS' packaging system or pip:
+   ::
 
-      $ pip install muttd
+       $ pip install muttd
    
 2. Edit your ``~/.muttrc`` and define new macros for muttd. ``A`` will pipe
-current message and process its output using ``extractmail.py``::
+   current message and process its output using ``extractmail.py``:
+   ::
+
 
        macro pager A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
        macro index A "<enter-command>unset wait_key<enter><pipe-entry>muttd extract<enter>"
