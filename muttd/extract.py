@@ -134,5 +134,5 @@ class ExtractCommand(object):
             messages=self.messages,
             attachments=self.attachments,
         )
-        with open(os.path.join(self.message_path, "index.html"), "w") as f:
+        with open(os.path.join(self.message_path, "index.html"), "wb") as f:
             f.write(index_html.encode("utf-8"))
