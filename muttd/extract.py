@@ -1,4 +1,4 @@
-# Copyright (c) 2017 Bertrand Janin <b@janin.com>
+# Copyright (c) 2017-2018 Bertrand Janin <b@janin.com>
 # Copyright (c) 2015 Vincent Tantardini, Bertrand Janin
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -119,7 +119,7 @@ class ExtractCommand(object):
         if self.inline_images:
             for idx, i in enumerate(self.messages):
                 for p in sorted(self.inline_images.keys()):
-                    self.messages[idx] = messages[idx].replace(
+                    self.messages[idx] = self.messages[idx].replace(
                         'cid:' + p,
                         self.inline_images[p],
                     )
